@@ -16,19 +16,50 @@
 		return email ? email[1] : null
 	}
 
-	$: email = context?.conversation?.recipient?.handle
+	$: email = context?.conversation?.recipient?.handle || 'kriistjanm@gmail.com'
 	$: if (email === 'no-reply@stockanalysis.com') {
 		// extract the email from the first part of the message
 		// looks like this: "From: Kristjan Mar Gunnarsson (kriistjanm@gmail.com) this is a message"
 		email = extractEmailFromBlurb(context.conversation.blurb)
 	}
+
+	async function copyToClipboard() {
+		if (email) {
+			try {
+				await navigator.clipboard.writeText(email)
+				// You could add a toast notification here if desired
+			} catch (err) {
+				console.error('Failed to copy email:', err)
+			}
+		}
+	}
 </script>
 
 <div class="p-4">
 	<h2 class="text-xl font-semibold">Shortcuts</h2>
-	<div class="text-sm text-gray-700 font-semibold">{email || 'Unknown email'}</div>
+	<div class="flex items-center gap-2">
+		<div class="text-sm font-semibold text-gray-700">{email || 'Unknown email'}</div>
+		{#if email}
+			<button on:click={copyToClipboard} class="rounded-full hover:bg-gray-100" title="Copy email to clipboard">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+				</svg>
+			</button>
+		{/if}
+	</div>
 
-	<div class="flex flex-col gap-1 mt-5">
+	<div class="mt-5 flex flex-col gap-1">
 		{#if email}
 			<a
 				class="hover:underline"
