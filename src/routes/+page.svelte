@@ -121,7 +121,7 @@
 			>
 			<a
 				class="hover:underline"
-				href="https://vendors.paddle.com/subscriptions/customers/all?sort_by=latest&search={encodeURIComponent(email)}"
+				href="https://vendors.paddle.com/customers-v2?search={encodeURIComponent(email)}"
 				target="_blank">Paddle</a
 			>
 			<a
@@ -138,7 +138,7 @@
 			>
 		{:else}
 			<a class="hover:underline" href="https://stockanalysis.com/admin/users/" target="_blank">Lookup User</a>
-			<a class="hover:underline" href="https://vendors.paddle.com/subscriptions/customers/all" target="_blank">Paddle</a
+			<a class="hover:underline" href="https://vendors.paddle.com/customers-v2" target="_blank">Paddle</a
 			>
 			<a class="hover:underline" href="https://app.convertkit.com/subscribers" target="_blank">ConvertKit</a>
 			<a
