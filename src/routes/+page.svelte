@@ -29,12 +29,38 @@
 
 	async function copyEmail() {
 		if (!email) return
-		try {
-			await navigator.clipboard.writeText(email)
+		if (await copyToClipboard(email)) {
 			copied = true
 			setTimeout(() => (copied = false), 1500)
+		}
+	}
+
+	async function copyToClipboard(text: string): Promise<boolean> {
+		// The async Clipboard API is blocked by the iframe permissions policy
+		// inside Front, so fall back to the legacy execCommand approach.
+		try {
+			if (navigator.clipboard?.writeText) {
+				await navigator.clipboard.writeText(text)
+				return true
+			}
+		} catch {
+			// fall through to the legacy approach below
+		}
+
+		try {
+			const textarea = document.createElement('textarea')
+			textarea.value = text
+			textarea.setAttribute('readonly', '')
+			textarea.style.position = 'fixed'
+			textarea.style.opacity = '0'
+			document.body.appendChild(textarea)
+			textarea.select()
+			const ok = document.execCommand('copy')
+			document.body.removeChild(textarea)
+			return ok
 		} catch (err) {
 			console.error('Failed to copy email:', err)
+			return false
 		}
 	}
 </script>
