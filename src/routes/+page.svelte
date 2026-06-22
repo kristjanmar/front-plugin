@@ -1,27 +1,29 @@
 <script lang="ts">
 	import Front from '@frontapp/plugin-sdk'
-	import { onDestroy } from 'svelte'
 
-	let context: any = {}
-	const subscription = Front.contextUpdates.subscribe((frontContext) => {
-		context = frontContext
-	})
+	let context = $state<any>({})
 
-	onDestroy(() => {
-		subscription.unsubscribe()
+	$effect(() => {
+		const subscription = Front.contextUpdates.subscribe((frontContext) => {
+			context = frontContext
+		})
+		return () => subscription.unsubscribe()
 	})
 
 	function extractEmailFromBlurb(blurb: string) {
-		const email = blurb.match(/\(([^)]+)\)/)
-		return email ? email[1] : null
+		const match = blurb.match(/\(([^)]+)\)/)
+		return match ? match[1] : null
 	}
 
-	$: email = context?.conversation?.recipient?.handle
-	$: if (email === 'no-reply@stockanalysis.com') {
-		// extract the email from the first part of the message
-		// looks like this: "From: Kristjan Mar Gunnarsson (kriistjanm@gmail.com) this is a message"
-		email = extractEmailFromBlurb(context.conversation.blurb)
-	}
+	const email = $derived.by(() => {
+		const handle = context?.conversation?.recipient?.handle
+		if (handle === 'no-reply@stockanalysis.com') {
+			// extract the email from the first part of the message
+			// looks like this: "From: Kristjan Mar Gunnarsson (kriistjanm@gmail.com) this is a message"
+			return extractEmailFromBlurb(context.conversation.blurb)
+		}
+		return handle
+	})
 </script>
 
 <div class="p-4">

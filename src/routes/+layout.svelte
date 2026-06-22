@@ -1,8 +1,10 @@
 <script>
 	import { browser } from '$app/environment'
-	import '../app.pcss'
+	import '../app.css'
+
+	let { children } = $props()
 </script>
 
 {#if browser}
-	<slot></slot>
+	{@render children()}
 {/if}
